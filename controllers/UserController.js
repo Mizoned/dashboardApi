@@ -9,7 +9,7 @@ class UserController {
             const { email, password } = request.body;
             const userData = await UserService.signIn(email, password);
 
-            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: 'api/user/refresh' });
+            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/', sameSite: "lax" });
             return response.json(userData);
         } catch (e) {
             next(e);
@@ -26,7 +26,7 @@ class UserController {
 
             const { email, password } = request.body;
             const  userData = await UserService.signUp(email, password);
-            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: 'api/user/refresh' });
+            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/', sameSite: "lax" });
             return response.json(userData);
         } catch (e) {
             next(e);
@@ -49,8 +49,8 @@ class UserController {
         try {
             const { refreshToken } = request.cookies;
 
-            const  userData = await UserService.refresh(refreshToken);
-            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: 'api/user/refresh' });
+            const userData = await UserService.refresh(refreshToken);
+            response.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/', sameSite: "lax" });
             return response.json(userData);
         } catch (e) {
             next(e);
@@ -62,6 +62,40 @@ class UserController {
             const activationLink = request.params.link;
             await UserService.activate(activationLink);
             return response.redirect(process.env.CLIENT_URL);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async sendRegistrationCode(request, response, next) {
+        try {
+            const errors = validationResult(request);
+
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest('Ошибка при валидации', errors.array()));
+            }
+
+            const { email } = request.body;
+            const codeData = await UserService.sendRegistrationCode(email);
+
+            return response.json(codeData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async verifyRegistrationCode(request, response, next) {
+        try {
+            const errors = validationResult(request);
+
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest('Ошибка при валидации', errors.array()));
+            }
+
+            const { email, code } = request.body;
+            const codeData = await UserService.verifyRegistrationCode(email, code);
+
+            return response.json(codeData);
         } catch (e) {
             next(e);
         }

@@ -25,7 +25,22 @@ class MailService {
                     <a href="${link}">${link}</a>
                 </div>
                 `
-        })
+        });
+    }
+
+    async sendRegistrationCode(to, code) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: 'Регистрация аккаунта на ' + process.env.API_URL,
+            text: '',
+            html:
+                `
+                <div>
+                    <h1>Регистрационный код ${code}</h1>
+                </div>
+                `
+        });
     }
 }
 

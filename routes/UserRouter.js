@@ -20,4 +20,18 @@ router.post('/logout', userController.logout);
 router.get('/refresh', userController.refresh);
 router.get('/activate/:link', userController.activate);
 
+router.post('/send-registration-code',
+    body('email').isEmail().withMessage('Адрес электронной почты введен неверно 1'),
+    userController.sendRegistrationCode
+);
+router.post('/verify-registration-code',
+    body('email')
+        .isEmail().withMessage('Адрес электронной почты введен неверно'),
+    body('code')
+        .isLength({ min:4, max: 4 }).withMessage('Код должен состоять из 4 цифр')
+        .isNumeric().withMessage('Код должен состоять только из цифр')
+        .notEmpty().withMessage('Код не может быть пустым'),
+    userController.verifyRegistrationCode
+);
+
 module.exports = router;

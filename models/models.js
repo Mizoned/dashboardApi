@@ -23,6 +23,14 @@ const TokenModel = sequelize.define('token', {
     refreshToken: { type: DataTypes.STRING, allowNull: false }
 });
 
+const RegistrationCodeModel = sequelize.define('registrationCode', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    email: { type: DataTypes.STRING, unique: true },
+    otp: { type: DataTypes.STRING, allowNull: false },
+    expiresIn: { type: DataTypes.DATE, allowNull: false },
+    isConfirmed: { type: DataTypes.BOOLEAN, defaultValue: false }
+});
+
 UserModel.hasOne(TokenModel);
 TokenModel.belongsTo(UserModel);
 
@@ -32,5 +40,6 @@ RatingModel.belongsTo(UserModel);
 module.exports = {
     UserModel,
     RatingModel,
-    TokenModel
+    TokenModel,
+    RegistrationCodeModel
 }
