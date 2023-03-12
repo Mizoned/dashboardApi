@@ -33,5 +33,23 @@ router.post('/verify-registration-code',
         .notEmpty().withMessage('Код не может быть пустым'),
     userController.verifyRegistrationCode
 );
+router.put('/update-profile-data',
+    body('email')
+        .isEmail().withMessage('Адрес электронной почты введен неверно'),
+    body('displayName')
+        .notEmpty().withMessage('Поле обязательно для заполнения')
+        .isLength({ min: 4, max: 24}).withMessage('Поле должно быть больше 3 и меньше 24 символов'),
+    body('location').isLength({ min: 4, max: 32}).withMessage('Поле должно быть больше 3 и меньше 32 символов'),
+    body('notifyAboutProductUpdates')
+        .isBoolean().withMessage('Значение должно быть логическим'),
+    body('notifyAboutMarketNewsletter')
+        .isBoolean().withMessage('Значение должно быть логическим'),
+    body('notifyAboutComments')
+        .isBoolean().withMessage('Значение должно быть логическим'),
+    body('notifyAboutPurchases')
+        .isBoolean().withMessage('Значение должно быть логическим'),
+    authMiddleware,
+    userController.updateProfileData
+);
 
 module.exports = router;

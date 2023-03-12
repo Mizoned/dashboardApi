@@ -1,6 +1,7 @@
 const UserService = require('../service/UserService');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/ApiError');
+const UserDto = require('../dtos/UserDto');
 
 class UserController {
 
@@ -36,7 +37,7 @@ class UserController {
     async logout(request, response, next) {
         try {
             const { refreshToken } = request.cookies;
-            const  token = await UserService.logout(refreshToken);
+            const token = await UserService.logout(refreshToken);
 
             response.clearCookie('refreshToken');
             return response.json(token);
@@ -96,6 +97,34 @@ class UserController {
             const codeData = await UserService.verifyRegistrationCode(email, code);
 
             return response.json(codeData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async updateProfileData(request, response, next) {
+        try {
+            const errors = validationResult(request);
+
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest('Ошибка при валидации', errors.array()));
+            }
+
+            const { email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases } = request.body;
+            const updatedProfileData = await UserService.updateProfileData(
+                {
+                    email,
+                    displayName,
+                    location,
+                    notifyAboutProductUpdates,
+                    notifyAboutMarketNewsletter,
+                    notifyAboutComments,
+                    notifyAboutPurchases
+                },
+                request.user.id
+            );
+
+            return response.json(updatedProfileData);
         } catch (e) {
             next(e);
         }

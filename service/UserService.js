@@ -220,6 +220,15 @@ class UserService {
         const codeDto = RegCodeDto.fromModel(codeData);
         return { codeDto }
     }
+
+    async updateProfileData({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases }, userId) {
+        const user = await UserModel.findByPk(userId);
+
+        await user.update({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases })
+        const userDto = UserDto.fromModel(user);
+
+        return { user: userDto }
+    }
 }
 
 module.exports = new UserService();
