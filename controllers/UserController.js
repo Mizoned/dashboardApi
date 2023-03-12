@@ -129,6 +129,24 @@ class UserController {
             next(e);
         }
     }
+
+    async updateProfilePassword(request, response, next) {
+        try {
+            const errors = validationResult(request);
+
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest('Ошибка при валидации', errors.array()));
+            }
+
+            const { oldPassword, newPassword, confirmNewPassword } = request.body;
+
+            const updatedProfileData = await UserService.updateProfilePassword({ oldPassword, newPassword, confirmNewPassword }, request.user.id);
+
+            return response.json(updatedProfileData);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = new UserController();

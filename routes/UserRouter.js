@@ -24,15 +24,17 @@ router.post('/send-registration-code',
     body('email').isEmail().withMessage('Адрес электронной почты введен неверно 1'),
     userController.sendRegistrationCode
 );
+
 router.post('/verify-registration-code',
     body('email')
         .isEmail().withMessage('Адрес электронной почты введен неверно'),
     body('code')
         .isLength({ min:4, max: 4 }).withMessage('Код должен состоять из 4 цифр')
         .isNumeric().withMessage('Код должен состоять только из цифр')
-        .notEmpty().withMessage('Код не может быть пустым'),
+        .notEmpty().withMessage('Поле обязательно для заполнения'),
     userController.verifyRegistrationCode
 );
+
 router.put('/update-profile-data',
     body('email')
         .isEmail().withMessage('Адрес электронной почты введен неверно'),
@@ -50,6 +52,14 @@ router.put('/update-profile-data',
         .isBoolean().withMessage('Значение должно быть логическим'),
     authMiddleware,
     userController.updateProfileData
+);
+
+router.put('/update-profile-password',
+    body('oldPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    body('newPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    body('confirmNewPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    authMiddleware,
+    userController.updateProfilePassword
 );
 
 module.exports = router;

@@ -229,6 +229,56 @@ class UserService {
 
         return { user: userDto }
     }
+
+    async updateProfilePassword({ oldPassword, newPassword, confirmNewPassword }, userId) {
+        if (newPassword !== confirmNewPassword) {
+            throw ApiError.BadRequest('Ошибка обновления пароля',
+                [
+                    {
+                        value: confirmNewPassword,
+                        msg: 'Пароли не совадают',
+                        param: 'confirmNewPassword'
+                    }
+                ]
+            );
+        }
+
+        const user = await UserModel.findByPk(userId);
+
+        const isPassEquals = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isPassEquals) {
+            throw ApiError.BadRequest('Ошибка обновления пароля',
+                [
+                    {
+                        value: oldPassword,
+                        msg: 'Старый пароль введен неверно',
+                        param: 'oldPassword'
+                    }
+                ]
+            );
+        }
+
+        const isNewPassEquals = await bcrypt.compare(newPassword, user.password);
+
+        if (isNewPassEquals) {
+            throw ApiError.BadRequest('Ошибка обновления пароля',
+                [
+                    {
+                        value: newPassword,
+                        msg: 'Новый пароль не должен совпадать со старым',
+                        param: 'newPassword'
+                    }
+                ]
+            );
+        }
+
+        const hashNewPassword = await bcrypt.hash(newPassword, 7);
+        await user.update({ password: hashNewPassword });
+        const userDto = UserDto.fromModel(user);
+
+        return { user: userDto }
+    }
 }
 
 module.exports = new UserService();
