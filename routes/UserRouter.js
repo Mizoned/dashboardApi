@@ -3,6 +3,7 @@ const router = new Router();
 const userController = require('../controllers/UserController');
 const authMiddleware = require('../middleware/AuthMiddleware');
 const { body } = require('express-validator');
+const imageFile = require('../middleware/imageFile');
 
 router.post('/sign-in',
     body('email').isEmail().withMessage('Адрес электронной почты введен неверно'),
@@ -40,8 +41,8 @@ router.put('/update-profile-data',
         .isEmail().withMessage('Адрес электронной почты введен неверно'),
     body('displayName')
         .notEmpty().withMessage('Поле обязательно для заполнения')
-        .isLength({ min: 4, max: 24}).withMessage('Поле должно быть больше 3 и меньше 24 символов'),
-    body('location').isLength({ min: 4, max: 32}).withMessage('Поле должно быть больше 3 и меньше 32 символов'),
+        .isLength({ min: 4, max: 24 }).withMessage('Поле должно быть больше 3 и меньше 24 символов'),
+    body('location').isLength({ max: 32 }).optional().withMessage('Поле должно быть больше 3 и меньше 32 символов'),
     body('notifyAboutProductUpdates')
         .isBoolean().withMessage('Значение должно быть логическим'),
     body('notifyAboutMarketNewsletter')
@@ -55,11 +56,22 @@ router.put('/update-profile-data',
 );
 
 router.put('/update-profile-password',
-    body('oldPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
-    body('newPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
-    body('confirmNewPassword').isLength({ min: 9, max: 32}).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    body('oldPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    body('newPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
+    body('confirmNewPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
     authMiddleware,
     userController.updateProfilePassword
+);
+
+router.put('/update-profile-picture',
+    authMiddleware,
+    imageFile.single('picture'),
+    userController.updateProfilePicture
+);
+
+router.delete('/remove-profile-picture',
+    authMiddleware,
+    userController.removeProfilePicture
 );
 
 module.exports = router;

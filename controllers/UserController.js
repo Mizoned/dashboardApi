@@ -2,6 +2,9 @@ const UserService = require('../service/UserService');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/ApiError');
 const UserDto = require('../dtos/UserDto');
+const fs = require('fs');
+const path = require('path');
+const removeFile = require('../utils/removeFile');
 
 class UserController {
 
@@ -143,6 +146,58 @@ class UserController {
             const updatedProfileData = await UserService.updateProfilePassword({ oldPassword, newPassword, confirmNewPassword }, request.user.id);
 
             return response.json(updatedProfileData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async updateProfilePicture(request, response, next) {
+        try {
+            const imagePath = '/profile/' + request.file.filename;
+            const userData = await UserService.getUserById(request.user.id);
+            const oldImagePath = path.join(__dirname, '..', '/static/', userData.originalImagePath);
+
+            const updatedProfilePicturePath = await UserService.updateProfilePicture(request.user.id, imagePath);
+
+            let isDefaultImage = userData.originalImagePath.includes('no-image');
+
+            if (!isDefaultImage) {
+                let isFileRemoved = removeFile(oldImagePath);
+
+                if (!isFileRemoved) {
+                    ApiError.BadRequest('Ошибка загрузки картинки', [
+                        {
+                            msg: 'Ошибка удаления старой картинки профиля!',
+                            params: 'picture'
+                        }
+                    ]);
+                }
+            }
+
+            return response.json(updatedProfilePicturePath);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async removeProfilePicture(request, response, next) {
+        try {
+            const userData = await UserService.getUserById(request.user.id);
+            const oldImagePath = path.join(__dirname, '..', '/static/', userData.originalImagePath);
+
+            let isFileRemoved = removeFile(oldImagePath);
+            if (!isFileRemoved) {
+                ApiError.BadRequest('Ошибка загрузки картинки', [
+                    {
+                        msg: 'Ошибка удаления картинки профиля!',
+                        params: 'picture'
+                    }
+                ]);
+            }
+
+            const updateProfilePicturePath = await UserService.updateProfilePicture(request.user.id, '/profile/no-image.png');
+
+            return response.json(updateProfilePicturePath);
         } catch (e) {
             next(e);
         }

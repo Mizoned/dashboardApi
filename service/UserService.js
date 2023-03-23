@@ -221,10 +221,10 @@ class UserService {
         return { codeDto }
     }
 
-    async updateProfileData({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases }, userId) {
+    async updateProfileData({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases, imagePath }, userId) {
         const user = await UserModel.findByPk(userId);
 
-        await user.update({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases })
+        await user.update({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases, imagePath })
         const userDto = UserDto.fromModel(user);
 
         return { user: userDto }
@@ -278,6 +278,21 @@ class UserService {
         const userDto = UserDto.fromModel(user);
 
         return { user: userDto }
+    }
+
+    async updateProfilePicture(userId, imagePath) {
+        const user = await UserModel.findByPk(userId);
+
+        await user.update({ imagePath })
+        const userDto = UserDto.fromModel(user);
+
+        return { path: userDto.imagePath }
+    }
+
+    async getUserById(userId) {
+        const user = await UserModel.findByPk(userId);
+
+        return UserDto.fromModel(user);
     }
 }
 
