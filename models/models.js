@@ -13,7 +13,8 @@ const UserModel = sequelize.define('user', {
     notifyAboutProductUpdates: { type: DataTypes.BOOLEAN, defaultValue: false },
     notifyAboutMarketNewsletter: { type: DataTypes.BOOLEAN, defaultValue: false },
     notifyAboutComments: { type: DataTypes.BOOLEAN, defaultValue: false },
-    notifyAboutPurchases: { type: DataTypes.BOOLEAN, defaultValue: false }
+    notifyAboutPurchases: { type: DataTypes.BOOLEAN, defaultValue: false },
+    imagePath: { type: DataTypes.TEXT, defaultValue: '/profile/no-image.png' }
 });
 
 const RatingModel = sequelize.define('rating', {
