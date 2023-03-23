@@ -16,6 +16,8 @@ module.exports = class UserDto {
         dto.notifyAboutMarketNewsletter = model.notifyAboutMarketNewsletter;
         dto.notifyAboutComments = model.notifyAboutComments;
         dto.notifyAboutPurchases = model.notifyAboutPurchases;
+        dto.originalImagePath = model.imagePath;
+        dto.imagePath = process.env.API_URL + model.imagePath;
 
         return dto;
     }
@@ -31,7 +33,8 @@ module.exports = class UserDto {
             notifyAboutProductUpdates,
             notifyAboutMarketNewsletter,
             notifyAboutComments,
-            notifyAboutPurchases
+            notifyAboutPurchases,
+            imagePath
         } = array[0];
 
         const dto = new UserDto();
@@ -45,6 +48,8 @@ module.exports = class UserDto {
         dto.notifyAboutMarketNewsletter = notifyAboutMarketNewsletter;
         dto.notifyAboutComments = notifyAboutComments;
         dto.notifyAboutPurchases = notifyAboutPurchases;
+        dto.originalImagePath = imagePath;
+        dto.imagePath = process.env.API_URL + imagePath;
 
         return dto;
     }
