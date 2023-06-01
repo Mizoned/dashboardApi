@@ -63,4 +63,14 @@ router.put('/:userId/password',
 	userController.updateProfilePassword //TODO Переименовать метод в updatePassword
 );
 
+/**
+ * Маршруты связанные с продуктами пользователя
+ */
+router.use('/:userId/products', userProductsRouter);
+
+/**
+ * Маршруты связанные с покупками пользователя
+ */
+router.use('/:userId/purchases', userPurchasesRouter);
+
 module.exports = router;
