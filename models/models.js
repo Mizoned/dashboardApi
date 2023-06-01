@@ -34,15 +34,62 @@ const RegistrationCodeModel = sequelize.define('registrationCode', {
     isConfirmed: { type: DataTypes.BOOLEAN, defaultValue: false }
 });
 
+const ProductModel = sequelize.define('product', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.TEXT, allowNull: false },
+    price: { type: DataTypes.DECIMAL(10, 2), allowNull: false }
+});
+
+const ProductStatusModel = sequelize.define('productStatus', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING }
+});
+
+const PurchaseModel = sequelize.define('purchase', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    productId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: ProductModel,
+            key: 'id',
+        }
+    },
+    buyerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: UserModel,
+            key: 'id',
+        }
+    }
+});
+
 UserModel.hasOne(TokenModel);
 TokenModel.belongsTo(UserModel);
 
 UserModel.hasMany(RatingModel);
 RatingModel.belongsTo(UserModel);
 
+UserModel.hasMany(ProductModel);
+ProductModel.belongsTo(UserModel);
+
+ProductStatusModel.hasMany(ProductModel);
+ProductModel.belongsTo(ProductStatusModel);
+
+UserModel.hasMany(PurchaseModel, { foreignKey: 'buyerId' });
+PurchaseModel.belongsTo(UserModel, { foreignKey: 'buyerId' });
+
+ProductModel.hasMany(PurchaseModel, { foreignKey: 'productId' });
+PurchaseModel.belongsTo(ProductModel, { foreignKey: 'productId' });
+
 module.exports = {
     UserModel,
     RatingModel,
     TokenModel,
-    RegistrationCodeModel
+    RegistrationCodeModel,
+    ProductModel,
+    ProductStatusModel,
+    PurchaseModel
 }
