@@ -24,7 +24,7 @@ const imageFilter = function (req, file, cb) {
         return cb(null, true);
     }
 
-    const error = ApiError.BadRequest('Ошибка загрузки файла', [
+    const error = ApiError.BadRequest([
         {
             msg: 'Разрешены только изображения (jpeg, jpg, png, gif)',
             param: 'picture'
