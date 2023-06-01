@@ -2,11 +2,11 @@ const ApiError = require('../exceptions/ApiError');
 
 module.exports = function (request, response, next) {
 	try {
-		const userId = request.params.userId;
-		const authUserId = request.user.id;
+		const userId = +request.params.userId;
+		const authUserId = +request.user.id;
 
 		if (userId !== authUserId) {
-			ApiError.Forbidden();
+			return next(ApiError.Forbidden());
 		}
 
 		next();
