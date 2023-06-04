@@ -1,4 +1,4 @@
-const ProductsService = require('../service/ProductsService');
+const ProductsService = require('../service/ProductService');
 const {validationResult} = require("express-validator");
 const ApiError = require("../exceptions/ApiError");
 
@@ -85,7 +85,7 @@ class ProductsController {
                 return next(ApiError.BadRequest(errors.array()));
             }
 
-            const productId = request.params.id;
+            const productId = request.params.productId;
             const productData = await ProductsService.getOne(productId);
 
             return response.json(productData);
