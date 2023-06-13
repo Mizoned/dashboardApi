@@ -29,7 +29,7 @@ router.put('/:userId',
 		.isBoolean().withMessage('Значение должно быть логическим'),
 	body('notifyAboutPurchases')
 		.isBoolean().withMessage('Значение должно быть логическим'),
-	userController.updateProfileData //TODO Переименовать метод в updateUser
+	userController.updateUser
 );
 
 /**
@@ -39,7 +39,7 @@ router.put('/:userId/avatar',
 	authMiddleware,
 	checkUserAccess,
 	imageFile.single('picture'),
-	userController.updateProfilePicture //TODO Переименовать метод в updateAvatar
+	userController.updateAvatar
 );
 
 /**
@@ -48,7 +48,7 @@ router.put('/:userId/avatar',
 router.delete('/:userId/avatar',
 	authMiddleware,
 	checkUserAccess,
-	userController.removeProfilePicture //TODO Переименовать метод в deleteAvatar
+	userController.deleteAvatar
 );
 
 /**
@@ -60,7 +60,7 @@ router.put('/:userId/password',
 	body('oldPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
 	body('newPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
 	body('confirmNewPassword').isLength({ min: 9, max: 32 }).withMessage('Поле должно быть больше 8 и меньше 32 символов'),
-	userController.updateProfilePassword //TODO Переименовать метод в updatePassword
+	userController.updatePassword
 );
 
 /**

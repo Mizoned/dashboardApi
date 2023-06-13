@@ -1,5 +1,6 @@
 const UserProductsService = require('../../services/users/UserProductsService');
 const { validationResult } = require("express-validator");
+const { PRODUCT_STATUSES } = require("../../config/constants");
 const ApiError = require("../../exceptions/ApiError");
 
 class UserProductsController {
@@ -12,8 +13,7 @@ class UserProductsController {
 			}
 
 			const { name, description, price } = request.body;
-			const statusDraftedId = 1;
-			const newProduct = await UserProductsService.create(request.user.id, name, description, price, statusDraftedId);
+			const newProduct = await UserProductsService.create(request.user.id, name, description, price, PRODUCT_STATUSES.drafted);
 
 			return response.json(newProduct);
 		} catch (e) {
@@ -30,8 +30,7 @@ class UserProductsController {
 			}
 
 			const { name, description, price } = request.body;
-			const statusReleasedId = 2;
-			const newProduct = await UserProductsService.create(request.user.id, name, description, price, statusReleasedId);
+			const newProduct = await UserProductsService.create(request.user.id, name, description, price, PRODUCT_STATUSES.released);
 
 			return response.json(newProduct);
 		} catch (e) {
@@ -48,8 +47,7 @@ class UserProductsController {
 			}
 
 			const { name, description, price, date } = request.body;
-			const statusScheduledId = 3;
-			const newProduct = await UserProductsService.create(request.user.id, name, description, price, statusScheduledId);
+			const newProduct = await UserProductsService.create(request.user.id, name, description, price, PRODUCT_STATUSES.scheduled);
 
 			//TODO нужно создать таблицу с запланированными работами и туда помещать id и дату,
 			// чтобы потом с помощью нее запускать скрипт
@@ -62,12 +60,6 @@ class UserProductsController {
 
 	async remove(request, response, next) {
 		try {
-			const errors = validationResult(request);
-
-			if (!errors.isEmpty()) {
-				return next(ApiError.BadRequest(errors.array()));
-			}
-
 			const removedProduct = await UserProductsService.remove(request.user.id, request.params.productId);
 
 			return response.json(removedProduct);
@@ -104,8 +96,7 @@ class UserProductsController {
 
 			let { limit, page } = request.query;
 
-			const statusId = 1;
-			const productsData = await this.getAllProductsByStatus(request.params.userId, statusId, limit, page);
+			const productsData = await this.getAllProductsByStatus(request.params.userId, PRODUCT_STATUSES.drafted, limit, page);
 			return response.json(productsData);
 		} catch (e) {
 			next(e);
@@ -122,8 +113,7 @@ class UserProductsController {
 
 			let { limit, page } = request.query;
 
-			const statusId = 3;
-			const productsData = await this.getAllProductsByStatus(request.params.userId, statusId, limit, page);
+			const productsData = await this.getAllProductsByStatus(request.params.userId, PRODUCT_STATUSES.scheduled, limit, page);
 			return response.json(productsData);
 		} catch (e) {
 			next(e);
@@ -140,8 +130,7 @@ class UserProductsController {
 
 			let { limit, page } = request.query;
 
-			const statusId = 2;
-			const productsData = await this.getAllProductsByStatus(request.params.userId, statusId, limit, page);
+			const productsData = await this.getAllProductsByStatus(request.params.userId, PRODUCT_STATUSES.released, limit, page);
 			return response.json(productsData);
 		} catch (e) {
 			next(e);

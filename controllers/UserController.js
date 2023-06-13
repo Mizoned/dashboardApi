@@ -5,7 +5,7 @@ const path = require('path');
 const removeFile = require('../utils/removeFile');
 
 class UserController {
-    async updateProfileData(request, response, next) {
+    async updateUser(request, response, next) {
         try {
             const errors = validationResult(request);
 
@@ -33,7 +33,7 @@ class UserController {
         }
     }
 
-    async updateProfilePassword(request, response, next) {
+    async updatePassword(request, response, next) {
         try {
             const errors = validationResult(request);
 
@@ -51,7 +51,7 @@ class UserController {
         }
     }
 
-    async updateProfilePicture(request, response, next) {
+    async updateAvatar(request, response, next) {
         try {
             const imagePath = '/profile/' + request.file.filename;
             const userData = await UserService.getUserById(request.user.id);
@@ -80,7 +80,7 @@ class UserController {
         }
     }
 
-    async removeProfilePicture(request, response, next) {
+    async deleteAvatar(request, response, next) {
         try {
             const userData = await UserService.getUserById(request.user.id);
             const oldImagePath = path.join(__dirname, '..', '/static/', userData.originalImagePath);

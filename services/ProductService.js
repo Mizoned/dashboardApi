@@ -1,18 +1,17 @@
-const { UserModel, ProductModel, ProductStatusModel } = require('../models/models');
+const { ProductModel, ProductStatusModel } = require('../models/models');
+const { PRODUCT_STATUSES } = require("../config/constants");
 const ApiError = require("../exceptions/ApiError");
 const { Op } = require('sequelize');
 
 class ProductService {
     async getOne(productId) {
-        const releasedProductStatusId = 3; //TODO Везде где есть такие переменные вынести в файл констант
-
         const productData = await ProductModel.findOne({
                 where: { id: productId },
                 include: [
                     {
                         model: ProductStatusModel,
                         attributes: ['id', 'name'],
-                        where: { id: releasedProductStatusId }
+                        where: { id: PRODUCT_STATUSES.released }
                     }
                 ],
                 attributes: ['id', 'name', 'description', 'price', 'createdAt', 'updatedAt']
@@ -27,8 +26,6 @@ class ProductService {
     }
 
     async getAll(limit, offset, search) {
-        const releasedProductStatusId = 2;
-
         let where = {
             name: {
                 [Op.iLike]: `%${search}%`
@@ -46,7 +43,7 @@ class ProductService {
                 {
                     model: ProductStatusModel,
                     attributes: ['id', 'name'],
-                    where: { id: releasedProductStatusId }
+                    where: { id: PRODUCT_STATUSES.released }
                 }
             ],
             attributes: ['id', 'name', 'description', 'price', 'createdAt', 'updatedAt'],
