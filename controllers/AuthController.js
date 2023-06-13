@@ -1,4 +1,4 @@
-const AuthService = require('../service/AuthServece');
+const AuthService = require('../services/AuthServece');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/ApiError');
 const path = require('path');

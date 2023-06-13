@@ -66,11 +66,11 @@ router.put('/:userId/password',
 /**
  * Маршруты связанные с продуктами пользователя
  */
-router.use('/:userId/products', userProductsRouter);
+router.use('/', userProductsRouter);
 
 /**
  * Маршруты связанные с покупками пользователя
  */
-router.use('/:userId/purchases', userPurchasesRouter);
+router.use('/', userPurchasesRouter);
 
 module.exports = router;
