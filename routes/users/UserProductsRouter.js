@@ -1,28 +1,32 @@
 const Router = require('express');
 const router = new Router();
-const productsController = require('../../controllers/ProductsController');
+const UserProductsController = require('../../controllers/users/UserProductsController');
 const authMiddleware = require('../../middleware/AuthMiddleware');
 const checkUserAccess = require('../../middleware/CheckUserAccess');
 const { body } = require('express-validator');
 
-router.get('/:productId',
+router.get('/:userId/products/released',
 	authMiddleware,
-	checkUserAccess
+	checkUserAccess,
+	UserProductsController.getAllReleasedProducts
 );
 
-router.get('/released',
+router.get('/:userId/products/draft',
 	authMiddleware,
-	checkUserAccess
+	checkUserAccess,
+	UserProductsController.getAllDraftProducts
 );
 
-router.get('/draft',
+router.get('/:userId/products/scheduled',
 	authMiddleware,
-	checkUserAccess
+	checkUserAccess,
+	UserProductsController.getAllScheduledProducts
 );
 
-router.get('/scheduled',
+router.get('/:userId/products/:productId',
 	authMiddleware,
-	checkUserAccess
+	checkUserAccess,
+	UserProductsController.getOne
 );
 
 router.put('/:productId',
@@ -37,7 +41,48 @@ router.post('/:productId',
 
 router.delete('/:productId',
 	authMiddleware,
-	checkUserAccess
+	checkUserAccess,
+	UserProductsController.remove
+);
+
+router.post('/:userId/products/drafted',
+	authMiddleware,
+	checkUserAccess,
+	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('price')
+		.isNumeric().withMessage('Поле должено быть числовым')
+		.notEmpty().withMessage('Поле обязательно для заполнения'),
+	UserProductsController.createDraft
+);
+
+router.post('/:userId/products/released',
+	authMiddleware,
+	checkUserAccess,
+	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('price')
+		.isNumeric().withMessage('Поле должено быть числовым')
+		.notEmpty().withMessage('Поле обязательно для заполнения'),
+	UserProductsController.createReleased
+);
+
+router.post('/:userId/products/scheduled',
+	authMiddleware,
+	checkUserAccess,
+	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('price')
+		.isNumeric().withMessage('Поле должено быть числовым')
+		.notEmpty().withMessage('Поле обязательно для заполнения'),
+	body('date').isDate().withMessage('Поле должно быть датой'),
+	UserProductsController.createScheduled
+);
+
+router.delete('/:userId/products/:productId',
+	authMiddleware,
+	checkUserAccess,
+	UserProductsController.remove
 );
 
 module.exports = router;
