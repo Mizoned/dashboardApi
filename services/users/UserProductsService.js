@@ -1,12 +1,7 @@
-const { UserModel, RegistrationCodeModel, TokenModel, ProductModel, ProductStatusModel} = require('../../models/models');
-const bcrypt = require('bcrypt');
-const uuid = require('uuid');
-const MailService = require('../MailService');
-const TokenService = require('../TokenService');
-const UserDto = require('../../dtos/UserDto');
-const RegCodeDto = require('../../dtos/RegCodeDto');
+const { ProductModel, ProductStatusModel, ProductPictureModel } = require('../../models/models');
+const ProductDto = require('../../dtos/ProductDto');
+const FileDto = require('../../dtos/FileDto');
 const ApiError = require('../../exceptions/ApiError');
-const generateCode = require('../../utils/generateCode');
 
 class UserProductsService {
 	async getOne(productId) {
@@ -30,26 +25,36 @@ class UserProductsService {
 	}
 
 	async getAllByStatus(userId, statusId, limit, offset) {
-		let products = await ProductModel.findAndCountAll({
+		let productsData = await ProductModel.findAndCountAll({
 			limit,
 			offset,
 			include: [
 				{
 					model: ProductStatusModel,
 					where: { id: statusId },
-					attributes: ['id', 'name']
+					attributes: []
+				},
+				{
+					model: ProductPictureModel,
+					as: 'pictures',
+					attributes: ['path'],
+					separate: true
 				}
 			],
 			where: { userId },
 			attributes: ['id', 'name', 'description', 'price', 'createdAt', 'updatedAt']
 		});
 
-		return { products };
+		const products = ProductDto.createArrayModels(productsData.rows);
+		products?.forEach((p) => p.pictures = FileDto.createArrayModels(p.pictures));
+
+		return { count: productsData.count, products };
 	}
 
 	async create(userId, name, description, price, productStatusId) {
 		const product = await ProductModel.create({ userId, name, description, price, productStatusId });
-		return { product };
+
+		return ProductDto.fromModel(product);
 	}
 
 	async remove(userId, productId) {

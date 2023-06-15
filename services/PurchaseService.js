@@ -28,10 +28,8 @@ class PurchaseService {
 
 			return { sales };
 		} catch (e) {
-			console.log(e)
 			throw e;
 		}
-
 	}
 }
 

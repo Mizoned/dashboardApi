@@ -5,10 +5,9 @@ const userPurchasesRouter = require('./UserPurchasesRouter');
 const userController = require('../../controllers/UserController');
 const authMiddleware = require('../../middleware/AuthMiddleware');
 const checkUserAccess = require('../../middleware/CheckUserAccess');
-const imageFile = require('../../middleware/imageFile');
+const FileUploadMiddleware = require('../../middleware/FileUploadMiddleware');
 const { body } = require('express-validator');
-
-
+const {FILE_UPLOADS} = require("../../config/constants");
 /**
  * Обновдление данных пользователя
  */
@@ -38,7 +37,7 @@ router.put('/:userId',
 router.put('/:userId/avatar',
 	authMiddleware,
 	checkUserAccess,
-	imageFile.single('picture'),
+	FileUploadMiddleware(FILE_UPLOADS.avatar).single('avatar'),
 	userController.updateAvatar
 );
 

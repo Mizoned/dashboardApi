@@ -66,6 +66,32 @@ const PurchaseModel = sequelize.define('purchase', {
     }
 });
 
+const ProductFileModel = sequelize.define('productFile', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    path: { type: DataTypes.STRING },
+    productId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: ProductModel,
+            key: 'id',
+        }
+    },
+});
+
+const ProductPictureModel = sequelize.define('productPicture', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    path: { type: DataTypes.STRING },
+    productId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: ProductModel,
+            key: 'id',
+        }
+    },
+});
+
 UserModel.hasOne(TokenModel);
 TokenModel.belongsTo(UserModel);
 
@@ -84,6 +110,12 @@ PurchaseModel.belongsTo(UserModel, { foreignKey: 'buyerId' });
 ProductModel.hasMany(PurchaseModel, { foreignKey: 'productId' });
 PurchaseModel.belongsTo(ProductModel, { foreignKey: 'productId' });
 
+ProductModel.hasMany(ProductFileModel, { foreignKey: 'productId' });
+ProductFileModel.belongsTo(ProductModel, { foreignKey: 'productId' });
+
+ProductModel.hasMany(ProductPictureModel, { foreignKey: 'productId', as: 'pictures' });
+ProductPictureModel.belongsTo(ProductModel, { foreignKey: 'productId', as: 'files' });
+
 module.exports = {
     UserModel,
     RatingModel,
@@ -91,5 +123,7 @@ module.exports = {
     RegistrationCodeModel,
     ProductModel,
     ProductStatusModel,
-    PurchaseModel
+    PurchaseModel,
+    ProductFileModel,
+    ProductPictureModel
 }

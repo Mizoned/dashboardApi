@@ -3,7 +3,10 @@ const router = new Router();
 const UserProductsController = require('../../controllers/users/UserProductsController');
 const authMiddleware = require('../../middleware/AuthMiddleware');
 const checkUserAccess = require('../../middleware/CheckUserAccess');
+const FileUploadMiddleware = require('../../middleware/FileUploadMiddleware');
+const { FILE_UPLOADS } = require('../../config/constants');
 const { body } = require('express-validator');
+
 
 router.get('/:userId/products/released',
 	authMiddleware,
@@ -11,7 +14,7 @@ router.get('/:userId/products/released',
 	UserProductsController.getAllReleasedProducts
 );
 
-router.get('/:userId/products/draft',
+router.get('/:userId/products/drafted',
 	authMiddleware,
 	checkUserAccess,
 	UserProductsController.getAllDraftProducts
@@ -48,6 +51,10 @@ router.delete('/:productId',
 router.post('/:userId/products/drafted',
 	authMiddleware,
 	checkUserAccess,
+	FileUploadMiddleware([FILE_UPLOADS.product.files, FILE_UPLOADS.product.images]).fields([
+		{ name: 'pictures', maxCount: 3 },
+		{ name: 'content', maxCount: 3 }
+	]),
 	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('price')
@@ -59,6 +66,10 @@ router.post('/:userId/products/drafted',
 router.post('/:userId/products/released',
 	authMiddleware,
 	checkUserAccess,
+	FileUploadMiddleware([FILE_UPLOADS.product.files, FILE_UPLOADS.product.images]).fields([
+		{ name: 'pictures', maxCount: 3 },
+		{ name: 'content', maxCount: 3 }
+	]),
 	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('price')

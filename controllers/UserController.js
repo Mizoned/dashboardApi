@@ -53,7 +53,7 @@ class UserController {
 
     async updateAvatar(request, response, next) {
         try {
-            const imagePath = '/profile/' + request.file.filename;
+            const imagePath = `${process.env.AVATAR_DESTINATION_PATH}/${request.file.filename}`;
             const userData = await UserService.getUserById(request.user.id);
             const oldImagePath = path.join(__dirname, '..', '/static/', userData.originalImagePath);
 
