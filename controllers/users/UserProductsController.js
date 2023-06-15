@@ -103,7 +103,6 @@ class UserProductsController {
 			const productsData = await this.getAllProductsByStatus(request, next, request.params.userId, PRODUCT_STATUSES.drafted);
 			return response.json(productsData);
 		} catch (e) {
-			console.log(e)
 			next(e);
 		}
 	}
