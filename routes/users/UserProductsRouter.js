@@ -52,8 +52,8 @@ router.post('/:userId/products/drafted',
 	authMiddleware,
 	checkUserAccess,
 	FileUploadMiddleware([FILE_UPLOADS.product.files, FILE_UPLOADS.product.images]).fields([
-		{ name: 'pictures', maxCount: 3 },
-		{ name: 'content', maxCount: 3 }
+		{ name: 'pictures', maxCount: 4 },
+		{ name: 'content', maxCount: 4 }
 	]),
 	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
@@ -67,8 +67,8 @@ router.post('/:userId/products/released',
 	authMiddleware,
 	checkUserAccess,
 	FileUploadMiddleware([FILE_UPLOADS.product.files, FILE_UPLOADS.product.images]).fields([
-		{ name: 'pictures', maxCount: 3 },
-		{ name: 'content', maxCount: 3 }
+		{ name: 'pictures', maxCount: 4 },
+		{ name: 'content', maxCount: 4 }
 	]),
 	body('name').notEmpty().withMessage('Поле обязательно для заполнения'),
 	body('description').notEmpty().withMessage('Поле обязательно для заполнения'),
