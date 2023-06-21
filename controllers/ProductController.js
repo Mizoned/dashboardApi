@@ -11,7 +11,7 @@ class ProductController {
                 return next(ApiError.BadRequest(errors.array()));
             }
 
-            const productId = request.params.productId;
+            const productId = request.params.id;
             const productData = await ProductService.getOne(productId);
 
             return response.json(productData);

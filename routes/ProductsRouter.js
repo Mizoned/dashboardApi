@@ -14,9 +14,4 @@ router.get('/',
 	productController.getAll
 );
 
-router.get('/',
-	authMiddleware,
-	productController.getAll
-);
-
 module.exports = router;

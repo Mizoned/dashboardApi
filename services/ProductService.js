@@ -1,8 +1,9 @@
-const { ProductModel, ProductStatusModel, ProductPictureModel } = require('../models/models');
+const { ProductModel, ProductStatusModel, ProductPictureModel, UserModel} = require('../models/models');
 const { PRODUCT_STATUSES } = require("../config/constants");
 const ApiError = require("../exceptions/ApiError");
 const { Op } = require('sequelize');
 const ProductDto = require("../dtos/ProductDto");
+const UserDto = require("../dtos/UserDto");
 const FileDto = require("../dtos/FileDto");
 
 class ProductService {
@@ -11,9 +12,13 @@ class ProductService {
                 where: { id: productId },
                 include: [
                     {
-                        model: ProductStatusModel,
-                        attributes: ['id', 'name'],
-                        where: { id: PRODUCT_STATUSES.released }
+                        model: ProductPictureModel,
+                        as: 'pictures',
+                        attributes: ['path']
+                    },
+                    {
+                        model: UserModel,
+                        attributes: ['id', 'displayName', 'email', 'imagePath']
                     }
                 ],
                 attributes: ['id', 'name', 'description', 'price', 'createdAt', 'updatedAt']
@@ -24,7 +29,11 @@ class ProductService {
             throw ApiError.NotFound()
         }
 
-        return { productData };
+        const products = ProductDto.fromModel(productData);
+        products.user = UserDto.fromModel(productData.user);
+        products.pictures = FileDto.createArrayModels(products.pictures);
+
+        return products;
     }
 
     async getAll(limit, offset, search) {
