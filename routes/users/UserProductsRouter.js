@@ -32,22 +32,6 @@ router.get('/:userId/products/:productId',
 	UserProductsController.getOne
 );
 
-router.put('/:productId',
-	authMiddleware,
-	checkUserAccess
-);
-
-router.post('/:productId',
-	authMiddleware,
-	checkUserAccess
-);
-
-router.delete('/:productId',
-	authMiddleware,
-	checkUserAccess,
-	UserProductsController.remove
-);
-
 router.post('/:userId/products/drafted',
 	authMiddleware,
 	checkUserAccess,

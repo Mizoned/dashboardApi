@@ -65,12 +65,12 @@ class UserController {
                 let isFileRemoved = removeFile(oldImagePath);
 
                 if (!isFileRemoved) {
-                    ApiError.BadRequest([
+					return next(ApiError.BadRequest([
                         {
-                            msg: 'Ошибка удаления старой картинки профиля!',
+                            msg: 'Error deleting old profile picture!',
                             params: 'picture'
                         }
-                    ]);
+                    ]));
                 }
             }
 
@@ -82,20 +82,38 @@ class UserController {
 
     async deleteAvatar(request, response, next) {
         try {
+			let updateProfilePicturePath = {
+				path: ''
+			};
+
+			let defaultPath = `${process.env.AVATAR_DESTINATION_PATH}/no-image.png`
             const userData = await UserService.getUserById(request.user.id);
             const oldImagePath = path.join(__dirname, '..', '/static/', userData.originalImagePath);
 
-            let isFileRemoved = removeFile(oldImagePath);
-            if (!isFileRemoved) {
-                ApiError.BadRequest([
-                    {
-                        msg: 'Ошибка удаления картинки профиля!',
-                        params: 'picture'
-                    }
-                ]);
-            }
+			if (defaultPath !== userData.originalImagePath) {
+				let isFileRemoved = removeFile(oldImagePath);
+				if (!isFileRemoved) {
+					return next(ApiError.BadRequest([
+						{
+							msg: 'Error deleting profile picture',
+							params: 'picture'
+						}
+					]));
+				} else {
+					if (defaultPath !== userData.originalImagePath) {
+						updateProfilePicturePath = await UserService.updateProfilePicture(request.user.id, defaultPath);
+					}
+				}
+			}
 
-            const updateProfilePicturePath = await UserService.updateProfilePicture(request.user.id, '/profile/no-image.png');
+			if (!updateProfilePicturePath.path) {
+				return next(ApiError.BadRequest([
+					{
+						msg: 'Error deleting profile picture',
+						params: 'picture'
+					}
+				]));
+			}
 
             return response.json(updateProfilePicturePath);
         } catch (e) {

@@ -16,11 +16,10 @@ class AuthService {
 		});
 
 		if (candidate) {
-			throw ApiError.BadRequest(`Ошибка регистрации`,
-				[
+			throw ApiError.BadRequest([
 					{
 						value: email,
-						msg: 'Пользователь с таким email уже существует',
+						msg: 'User with this email already exists',
 						param: 'email'
 					}
 				]
@@ -35,7 +34,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: email,
-						msg: 'Учетная запись не подтверждена',
+						msg: 'Account not verified!',
 						param: 'email'
 					}
 				]
@@ -59,7 +58,13 @@ class AuthService {
 		const  user = await UserModel.findOne({ where: { activationLink } });
 
 		if (!user) {
-			throw ApiError.BadRequest('Некорректная ссылка активации')
+			throw ApiError.BadRequest([
+				{
+					value: activationLink,
+					mas: 'Некорректная ссылка активации',
+					param: 'activation-link'
+				}
+			]);
 		}
 
 		user.update({ isActivated: true });
@@ -72,7 +77,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: email,
-						msg: 'Пользователь с таким email не зарегистрирован',
+						msg: 'User with this email is not registered',
 						param: 'email'
 					}
 				]
@@ -85,7 +90,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: password,
-						msg: 'Пароль введен неверно',
+						msg: 'Password entered incorrectly',
 						param: 'password'
 					}
 				]
@@ -139,7 +144,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: email,
-						msg: 'Пользователь с таким email уже существует',
+						msg: 'User with this email already exists',
 						param: 'email'
 					}
 				]
@@ -153,17 +158,16 @@ class AuthService {
 		const currentDate = new Date();
 
 		if (candidateCode && candidateCode.expiresIn > currentDate) {
-			const secondsLeft = candidateCode.expiresIn.getSeconds() - currentDate.getSeconds();
+			const secondsRemaining = Math.floor((candidateCode.expiresIn - currentDate) / 1000);
 
 			throw ApiError.BadRequest([
-					{
-						value: email,
-						msg: `Повторите отправку кода через: ${secondsLeft}`,
-						param: 'email',
-						secondsLeft: secondsLeft
-					}
-				]
-			);
+				{
+					value: email,
+					msg: `Resend code in: ${secondsRemaining} second(s)`,
+					param: 'email',
+					secondsLeft: secondsRemaining
+				}
+			]);
 		}
 
 		const code = generateCode();
@@ -175,6 +179,7 @@ class AuthService {
 
 		const codeDto = RegCodeDto.fromArray(codeData);
 
+		//TODO тут потенциальная ошибка, если email не будет найден
 		await MailService.sendRegistrationCode(email, code);
 		return { codeDto }
 	}
@@ -188,7 +193,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: code,
-						msg: 'Код введен неверно!',
+						msg: 'Code entered incorrectly!',
 						param: 'code',
 						isExpired: false
 					}
@@ -200,7 +205,7 @@ class AuthService {
 			throw ApiError.BadRequest([
 					{
 						value: code,
-						msg: 'Срок действия кода истек. Повторите запрос кода!',
+						msg: 'The code has expired. Please re-request the code!',
 						param: 'code',
 						isExpired: true
 					}

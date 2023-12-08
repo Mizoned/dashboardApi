@@ -4,14 +4,14 @@ const authController = require('../controllers/AuthController');
 const { body } = require('express-validator');
 
 router.post('/sign-in',
-    body('email').isEmail().withMessage('Адрес электронной почты введен неверно'),
-    body('password').isLength({ min:6, max: 32 }).withMessage('Пароль должен быть больше 6 и меньше 32 символов'),
+    body('email').isEmail().withMessage('Email address entered incorrectly'),
+    body('password').isLength({ min:8, max: 32 }).withMessage('Password must be greater than 8 and less than 32 characters'),
 	authController.signIn
 );
 
 router.post('/sign-up',
-    body('email').isEmail().withMessage('Адрес электронной почты введен неверно'),
-    body('password').isLength({ min:6, max: 32 }).withMessage('Пароль должен быть больше 6 и меньше 32 символов'),
+    body('email').isEmail().withMessage('Email address entered incorrectly'),
+    body('password').isLength({ min:8, max: 32 }).withMessage('Password must be greater than 8 and less than 32 characters'),
 	authController.signUp
 );
 
@@ -20,17 +20,17 @@ router.get('/refresh', authController.refresh);
 router.get('/activate/:link', authController.activate);
 
 router.post('/send-registration-code',
-    body('email').isEmail().withMessage('Адрес электронной почты введен неверно 1'),
+    body('email').isEmail().withMessage('Email address entered incorrectly'),
 	authController.sendRegistrationCode
 );
 
 router.post('/verify-registration-code',
     body('email')
-        .isEmail().withMessage('Адрес электронной почты введен неверно'),
+        .isEmail().withMessage('Email address entered incorrectly'),
     body('code')
-        .isLength({ min:4, max: 4 }).withMessage('Код должен состоять из 4 цифр')
-        .isNumeric().withMessage('Код должен состоять только из цифр')
-        .notEmpty().withMessage('Поле обязательно для заполнения'),
+        .isLength({ min:4, max: 4 }).withMessage('Code must be 4 digits')
+        .isNumeric().withMessage('The code must contain only numbers')
+        .notEmpty().withMessage('Required field'),
 	authController.verifyRegistrationCode
 );
 

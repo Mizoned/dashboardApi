@@ -68,6 +68,8 @@ const PurchaseModel = sequelize.define('purchase', {
 
 const ProductFileModel = sequelize.define('productFile', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING },
+    originalName: { type: DataTypes.STRING },
     path: { type: DataTypes.STRING },
     productId: {
         type: DataTypes.INTEGER,
@@ -81,6 +83,8 @@ const ProductFileModel = sequelize.define('productFile', {
 
 const ProductPictureModel = sequelize.define('productPicture', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING },
+    originalName: { type: DataTypes.STRING },
     path: { type: DataTypes.STRING },
     productId: {
         type: DataTypes.INTEGER,

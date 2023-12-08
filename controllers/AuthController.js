@@ -1,13 +1,17 @@
-const AuthService = require('../services/AuthServece');
+const AuthService = require('../services/AuthService');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/ApiError');
-const path = require('path');
-const removeFile = require('../utils/removeFile');
 
 class AuthController {
 
 	async signIn(request, response, next) {
 		try {
+			const errors = validationResult(request);
+
+			if (!errors.isEmpty()) {
+				return next(ApiError.BadRequest(errors.array()));
+			}
+
 			const { email, password } = request.body;
 			const userData = await AuthService.signIn(email, password);
 

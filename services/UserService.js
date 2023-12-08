@@ -1,12 +1,7 @@
-const { UserModel, RegistrationCodeModel, TokenModel } = require('../models/models');
+const { UserModel } = require('../models/models');
 const bcrypt = require('bcrypt');
-const uuid = require('uuid');
-const MailService = require('./MailService');
-const TokenService = require('./TokenService');
 const UserDto = require('../dtos/UserDto');
-const RegCodeDto = require('../dtos/RegCodeDto');
 const ApiError = require('../exceptions/ApiError');
-const generateCode = require('../utils/generateCode');
 
 class UserService {
     async updateProfileData({ email, displayName, location, notifyAboutProductUpdates, notifyAboutMarketNewsletter, notifyAboutComments, notifyAboutPurchases, imagePath }, userId) {
@@ -23,7 +18,7 @@ class UserService {
             throw ApiError.BadRequest([
                     {
                         value: confirmNewPassword,
-                        msg: 'Пароли не совадают',
+                        msg: 'Password mismatch',
                         param: 'confirmNewPassword'
                     }
                 ]
@@ -38,7 +33,7 @@ class UserService {
             throw ApiError.BadRequest([
                     {
                         value: oldPassword,
-                        msg: 'Старый пароль введен неверно',
+                        msg: 'The old password was entered incorrectly',
                         param: 'oldPassword'
                     }
                 ]
@@ -51,7 +46,7 @@ class UserService {
             throw ApiError.BadRequest([
                     {
                         value: newPassword,
-                        msg: 'Новый пароль не должен совпадать со старым',
+                        msg: 'The new password must not match the old one.',
                         param: 'newPassword'
                     }
                 ]
